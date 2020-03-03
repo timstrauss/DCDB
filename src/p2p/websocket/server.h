@@ -7,16 +7,21 @@ using namespace ix;
 
 namespace P2P
 {
-    class Server
+    class P2PWSServer
     {
     public:
-        std::thread startServer(int port);
-        bool isStarted();
-        void stopServer();
+        P2PWSServer(int port);
+        ~P2PWSServer();
+        void start();
+        void stop();
+        bool running();
 
     private:
+        void privateStart();
+        void run();
+        int port;
+        std::thread runningThread;
         WebSocketServer *server;
-        void _startServer(int port);
         bool serverStarted = false;
     };
 

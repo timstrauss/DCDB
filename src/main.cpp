@@ -1,9 +1,9 @@
 #include <iostream>
 #include <thread>
-#include <unistd.h>
 
-#include "p2p/websocket/server.h"
+#include "ixwebsocket/IXNetSystem.h"
 #include "p2p/websocket/client.h"
+#include "p2p/P2PNode.h"
 
 
 using namespace std;
@@ -11,28 +11,31 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    P2P::Server server;
+#ifdef _WIN32
+    ix::initNetSystem();
+#endif
+    P2P::P2PNode node(12345);
 
-    thread t1 = server.startServer(12345);
+    bool started = node.start();
 
-    while(!server.isStarted()) {}
-
-    P2P::Client client;
+    if (!started) {
+        return -1;
+    }
+    P2P::P2PWSClient client;
 
     thread t2 = client.startClient();
 
     while(!client.isStarted()) {}
 
     client.send("Haha");
-    client.send("Läuft");
+    client.send("Laeuft");
 
     client.stopClient();
 
     while(client.isStarted()) {}
 
-    server.stopServer();
+    node.stop();
 
-    t1.join();
     t2.join();
 
     return 0;

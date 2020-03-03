@@ -7,7 +7,7 @@ using namespace ix;
 using namespace std;
 
 namespace P2P {
-    class Client
+    class P2PWSClient
     {
     public:
         thread startClient();
@@ -16,6 +16,7 @@ namespace P2P {
         void stopClient();
 
     private:
+        void setStarted();
         void _startClient();
         bool startedClient = false;
         WebSocket *socket;
