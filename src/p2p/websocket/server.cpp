@@ -4,11 +4,11 @@
 using namespace P2P;
 using namespace std;
 
-thread Server::startServer(int port) {
-    return thread(&Server::_startServer, this, port);
+thread P2PWSServer::startServer(int port) {
+    return thread(&P2PWSServer::_startServer, this, port);
 }
 
-void Server::_startServer(int port) {
+void P2PWSServer::_startServer(int port) {
     WebSocketServer newServer(port, "127.0.0.1");
 
     newServer.setOnConnectionCallback(
@@ -28,8 +28,6 @@ void Server::_startServer(int port) {
                         }
                     } else if (msg->type == ix::WebSocketMessageType::Message) {
                         webSocket->send(msg->str, msg->binary);
-                    } else if (msg->type == WebSocketMessageType::Close) {
-                        cerr << connectionState->getId() << endl;
                     }
                 });
             }
@@ -48,10 +46,10 @@ void Server::_startServer(int port) {
     cout << "Server stopped" << endl;
 }
 
-bool Server::isStarted() {
+bool P2PWSServer::isStarted() {
     return serverStarted;
 }
 
-void Server::stopServer() {
+void P2PWSServer::stopServer() {
     server->stop();
 }

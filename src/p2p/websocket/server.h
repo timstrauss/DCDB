@@ -7,7 +7,7 @@ using namespace ix;
 
 namespace P2P
 {
-    class Server
+    class P2PWSServer
     {
     public:
         std::thread startServer(int port);

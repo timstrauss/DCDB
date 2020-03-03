@@ -1,18 +1,18 @@
 #include <iostream>
 #include "client.h"
-#include <unistd.h>
 
 using namespace P2P;
 
-thread Client::startClient() {
-    return thread(&P2P::Client::_startClient, this);
+thread P2PWSClient::startClient() {
+    return thread(&P2P::P2PWSClient::_startClient, this);
 }
 
-void Client::_startClient() {
+void P2PWSClient::_startClient() {
     WebSocket newSocket;
 
     string url("ws://localhost:12345/");
     newSocket.setUrl(url);
+    newSocket.disableAutomaticReconnection();
 
     newSocket.setOnMessageCallback([](const WebSocketMessagePtr &msg) {
         if (msg->type == WebSocketMessageType::Message) {
@@ -22,29 +22,33 @@ void Client::_startClient() {
 
     WebSocketInitResult success = newSocket.connect(1);
 
-    sleep(2);
-
     socket = &newSocket;
-    startedClient = true;
+    thread setStarted(&P2P::P2PWSClient::setStarted, this);
 
     newSocket.run();
+
+    setStarted.join();
 
     startedClient = false;
 
     cout << "Client stopped" << endl;
 }
 
-bool Client::isStarted() {
+void P2PWSClient::setStarted() {
+    _sleep(1500);
+    startedClient = true;
+}
+
+bool P2PWSClient::isStarted() {
     return startedClient;
 }
 
-void Client::send(string message) {
+void P2PWSClient::send(string message) {
     if (startedClient) {
-        WebSocketSendInfo success = socket->send(message);
+        socket->send(message);
     }
 }
 
-void Client::stopClient() {
-    socket->close();
+void P2PWSClient::stopClient() {
     socket->stop();
 }
