@@ -1,5 +1,6 @@
 [requires]
-ixwebsocket/7.9.2
+boost/1.72.0
+gtest/1.10.0
 
 [generators]
 cmake

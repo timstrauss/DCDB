@@ -1,44 +1,29 @@
 #include <iostream>
-#include <thread>
+#include <p2p/tcpsocket/server.h>
+#include "p2p/tcpsocket/client.h"
 
-#include "ixwebsocket/IXNetSystem.h"
-#include "p2p/websocket/server.h"
-#include "p2p/websocket/client.h"
-
+void onAccpet(string address, int port, string message);
 
 using namespace std;
 
+class test {
+public:
+    void onAccpet(string address, int port, string message) {
+        cout << "New Connection:\n\tPort: " << port << "\n\tAddress: " << address << endl;
+        //boost::asio::streambuf buf;
+        //boost::asio::read(new_socket, buf);
+        //string data = boost::asio::buffer_cast<const char*>(buf.data());
+        //cout << data;
+    }
+};
 
-int main(int argc, char** argv)
-{
-#ifdef _WIN32
-    ix::initNetSystem();
-#endif
-
-    P2P::P2PWSServer server;
-
-    thread t1 = server.startServer(12345);
-
-    while(!server.isStarted()) {}
-
-    P2P::P2PWSClient client;
-
-    thread t2 = client.startClient();
-
-    while(!client.isStarted()) {}
-
-    client.send("Haha");
-    client.send("Laeuft");
-
-
-    client.stopClient();
-
-    while(client.isStarted()) {}
-
-    server.stopServer();
-
-    t1.join();
-    t2.join();
-
-    return 0;
+int main(int argc, char **argv) {
+    test *t = new test();
+    P2P::Server server(12345);
+    P2P::Client client("0.0.0.0", 12345);
+    P2P::Client client2("0.0.0.0", 12345);
+    bool serverStarted = server.start(&test::onAccpet, t);
+    bool success = client.connect();
+    bool success2 = client2.connect();
+    sleep(2);
 }

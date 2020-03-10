@@ -4,6 +4,10 @@
  include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
  conan_basic_setup()
 
+ if(CMAKE_COMPILER_IS_GNUCXX)
+  set(CMAKE_CXX_FLAGS "--coverage")
+ endif()
+
  include_directories(src)
  file(GLOB_RECURSE PROJECT_SOURCE "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp")
 
@@ -15,3 +19,5 @@
 
  add_executable(dcdb src/main.cpp)
  target_link_libraries(dcdb dcdblib ${CONAN_LIBS})
+
+ add_subdirectory(tests)
